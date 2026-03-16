@@ -25,11 +25,7 @@ jobs:
 
       - name: Build project
         run: npm run build
-
-      - name: Deploy to Vercel (production)
-        run: npx vercel@50.22.1 deploy --prod --scope cjp442 --token "$VERCEL_TOKEN" --yes
         env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
           VITE_SITE_NAME: ${{ secrets.VITE_SITE_NAME }}
@@ -39,6 +35,13 @@ jobs:
           VITE_ENABLE_AUCTIONS: ${{ secrets.VITE_ENABLE_AUCTIONS }}
           VITE_ENABLE_3D_ROOMS: ${{ secrets.VITE_ENABLE_3D_ROOMS }}
           VITE_ENABLE_GAMES: ${{ secrets.VITE_ENABLE_GAMES }}
+
+      - name: Deploy to Vercel (production)
+        run: npx vercel@50.22.1 deploy --prebuilt --prod --token "$VERCEL_TOKEN" --yes
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
       - name: Verify deployment
         run: |
