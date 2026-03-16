@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { Canvas } from '@react-three/fiber';
-import { OrbitControls, Html, PerspectiveCamera } from '@react-three/drei';
+import { OrbitControls, PerspectiveCamera } from '@react-three/drei';
 import LobbyScene from './scenes/LobbyScene';
 import HostRoomScene from './scenes/HostRoomScene';
 import MemberRoomScene from './scenes/MemberRoomScene';
-import * as THREE from 'three';
+import * as _THREE from 'three';
 
 interface GameEngineProps {
   onSceneChange?: (scene: string) => void;

@@ -7,7 +7,7 @@ const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY ?? 'your-anon-key
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
-export function setupRealTimeSubscription(table: string, onInsert: (payload: any) => void) {
+export function setupRealTimeSubscription(table: string, onInsert: (payload: unknown) => void) {
   const subscription = supabase
     .channel(`realtime:${table}`)
     .on('postgres_changes', { event: 'INSERT', schema: 'public', table }, onInsert)
@@ -21,6 +21,7 @@ export async function handleTransaction(table: string, record: object) {
   return data
 }
 
-export function handleError(error: any) {
-  if (error) console.error('Supabase error:', error.message)
+export function handleError(error: unknown) {
+  if (error instanceof Error) console.error('Supabase error:', error.message)
+  else if (error) console.error('Supabase error:', error)
 }

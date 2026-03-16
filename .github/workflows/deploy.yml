@@ -1,0 +1,68 @@
+name: Deploy to Vercel
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build project
+        run: npm run build
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+          VITE_SITE_NAME: ${{ secrets.VITE_SITE_NAME }}
+          VITE_DOMAIN: ${{ secrets.VITE_DOMAIN }}
+          VITE_HOST_PHONE: ${{ secrets.VITE_HOST_PHONE }}
+          VITE_ENABLE_DONATIONS: ${{ secrets.VITE_ENABLE_DONATIONS }}
+          VITE_ENABLE_AUCTIONS: ${{ secrets.VITE_ENABLE_AUCTIONS }}
+          VITE_ENABLE_3D_ROOMS: ${{ secrets.VITE_ENABLE_3D_ROOMS }}
+          VITE_ENABLE_GAMES: ${{ secrets.VITE_ENABLE_GAMES }}
+
+      - name: Check Vercel secrets are configured
+        id: check_secrets
+        run: |
+          if [ -z "$VERCEL_TOKEN" ] || [ -z "$VERCEL_ORG_ID" ] || [ -z "$VERCEL_PROJECT_ID" ]; then
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::VERCEL_TOKEN, VERCEL_ORG_ID, or VERCEL_PROJECT_ID secret is not set. Skipping deployment."
+            echo "To enable deployments, add VERCEL_TOKEN, VERCEL_ORG_ID, and VERCEL_PROJECT_ID"
+            echo "as repository secrets (Settings → Secrets and variables → Actions)."
+            echo "Get these values from: https://vercel.com/account/tokens and your Vercel project settings."
+          else
+            echo "configured=true" >> "$GITHUB_OUTPUT"
+          fi
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+      - name: Deploy to Vercel (production)
+        if: steps.check_secrets.outputs.configured == 'true'
+        run: npx vercel@latest deploy --prebuilt --prod --token "$VERCEL_TOKEN" --yes
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+      - name: Verify deployment
+        if: steps.check_secrets.outputs.configured == 'true'
+        run: |
+          echo "Deployment to Vercel completed successfully."
+          echo "Visit https://keepersauction.com to verify."

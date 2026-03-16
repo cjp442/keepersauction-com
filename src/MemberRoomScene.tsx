@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Html } from '@react-three/drei';
-import * as THREE from 'three';
+import * as _THREE from 'three';
 
 interface MemberRoomSceneProps {
   onBack: () => void;

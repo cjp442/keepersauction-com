@@ -6,7 +6,7 @@ export function getLobbyState() {
 }
 
 // Function to get room data
-export function getRoomData(roomId) {
+export function getRoomData(_roomId) {
     // Logic to retrieve data for a specific room
 }
 
@@ -16,11 +16,11 @@ export function getOnlinePlayers() {
 }
 
 // Function to update player position
-export function updatePlayerPosition(playerId, newPosition) {
+export function updatePlayerPosition(_playerId, _newPosition) {
     // Logic to update the position of a player
 }
 
 // Function for portal transitions
-export function portalTransition(playerId, portalId) {
+export function portalTransition(_playerId, _portalId) {
     // Logic for handling a player's transition through a portal
 }
