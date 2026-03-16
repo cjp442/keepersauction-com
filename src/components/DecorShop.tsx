@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import './DecorShop.css'; // Optional CSS file for styling
 
 const DecorShop = () => {

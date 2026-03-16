@@ -94,8 +94,8 @@ const BlackjackGame: React.FC<BlackjackGameProps> = ({ onClose }) => {
   }
 
   const stand = () => {
-    let dCards = [...dealerCards]
-    let d = [...deck]
+    const dCards = [...dealerCards]
+    const d = [...deck]
     while (handValue(dCards) < 17) dCards.push(d.pop()!)
     setDealerCards(dCards)
     setDeck(d)

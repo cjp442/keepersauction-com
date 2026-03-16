@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { supabase } from '../../supabaseClient'; // Adjust the import according to your Supabase client setup
 
 const Bar = () => {
     const [price, setPrice] = useState(0);
     const [tokenCount, setTokenCount] = useState(0);
-    const [taxRate, setTaxRate] = useState(0.1); // Assuming a 10% tax rate
+    const [taxRate, _setTaxRate] = useState(0.1); // Assuming a 10% tax rate
     const [totalPrice, setTotalPrice] = useState(0);
 
     useEffect(() => {

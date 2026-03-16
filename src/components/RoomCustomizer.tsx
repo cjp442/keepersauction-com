@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Rnd } from 'react-rnd';
 
 const RoomCustomizer = () => {
@@ -29,7 +29,7 @@ const RoomCustomizer = () => {
                         style={{ border: selectedItem === item.id ? '2px solid blue' : 'none' }}
                         bounds="parent"
                         onClick={() => setSelectedItem(item.id)}
-                        onDragStop={(e, d) => {
+                        onDragStop={(_e, d) => {
                             const updatedItems = decorItems.map(i => 
                                 i.id === item.id ? { ...i, x: d.x, y: d.y } : i
                             );

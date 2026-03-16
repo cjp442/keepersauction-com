@@ -83,7 +83,7 @@ export interface Room {
   description: string
   room_type: 'basic' | 'premium' | 'host'
   template?: string
-  furniture?: any[]
+  furniture?: unknown[]
   max_users: number
   is_public: boolean
   created_at: string

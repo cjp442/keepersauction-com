@@ -15,7 +15,7 @@ const useGameStore = create<SceneState>((set) => ({
     'living room': ['kitchen'],
   },
   switchScene: (scene) => set({ currentScene: scene }),
-  navigateToRoom: (room) => {
+  navigateToRoom: (_room) => {
     // Return available rooms for the current scene
     return this.roomNavigation[this.currentScene] || [];
   },

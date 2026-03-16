@@ -6,7 +6,7 @@
  * @param {string} currencySymbol - The currency symbol.
  * @returns {string} The formatted currency string.
  */
-function formatCurrency(amount, currencySymbol) {
+export function formatCurrency(amount, currencySymbol) {
     return `${currencySymbol}${amount.toFixed(2)}`;
 }
 
@@ -15,7 +15,7 @@ function formatCurrency(amount, currencySymbol) {
  * @param {Date} date - The date to be formatted.
  * @returns {string} The formatted date string.
  */
-function formatDate(date) {
+export function formatDate(date) {
     return date.toISOString().split('T')[0];
 }
 
@@ -24,7 +24,7 @@ function formatDate(date) {
  * @param {number} number - The number to be formatted.
  * @returns {string} The formatted number string.
  */
-function formatNumber(number) {
+export function formatNumber(number) {
     return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 }
 

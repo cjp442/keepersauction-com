@@ -36,7 +36,7 @@ export async function initiatePurchase(userId: string, tokenAmount: number): Pro
  *
  * @see sql/schema.sql  add_keepers_coins()
  */
-export async function handleStripeWebhook(
+export function handleStripeWebhook(
   rawBody: string,
   signature: string,
   webhookSecret: string,
@@ -55,18 +55,19 @@ export async function handleStripeWebhook(
   //   })
   // }
   console.info('[Webhook] handleStripeWebhook — implement server-side', { signature, webhookSecret: !!webhookSecret, rawBody: rawBody.slice(0, 40) })
+  return Promise.resolve()
 }
 
 /** Fetch coin balance for a user (Supabase) */
-export async function getCoinBalance(userId: string): Promise<number> {
-  // const { data } = await supabase.from('keepers_coins').select('balance').eq('user_id', userId).single()
+export function getCoinBalance(_userId: string): Promise<number> {
+  // const { data } = await supabase.from('keepers_coins').select('balance').eq('user_id', _userId).single()
   // return data?.balance ?? 0
-  return 0
+  return Promise.resolve(0)
 }
 
 /** Fetch transaction history for a user */
-export async function getTransactionHistory(userId: string) {
-  // const { data } = await supabase.from('coin_transactions').select('*').eq('user_id', userId).order('created_at', { ascending: false })
+export function getTransactionHistory(_userId: string): Promise<unknown[]> {
+  // const { data } = await supabase.from('coin_transactions').select('*').eq('user_id', _userId).order('created_at', { ascending: false })
   // return data ?? []
-  return []
+  return Promise.resolve([])
 }

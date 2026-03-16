@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei'; // Example for controls
 
 const Avatar = () => {
-    const [position, setPosition] = useState([0, 0, 0]); // Position of the avatar
+    const [position, _setPosition] = useState([0, 0, 0]); // Position of the avatar
     const [isSitting, setIsSitting] = useState(false);
 
     // Function to handle walking animations with elbow and knee bending
@@ -14,7 +14,7 @@ const Avatar = () => {
     };
 
     // Function to handle sitting animation
-    const sit = () => {
+    const _sit = () => {
         setIsSitting(!isSitting);
     };
 
