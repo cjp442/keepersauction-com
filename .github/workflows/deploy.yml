@@ -27,7 +27,7 @@ jobs:
         run: npm run build
 
       - name: Deploy to Vercel (production)
-        run: npx vercel@50.22.1 deploy --prod --token "$VERCEL_TOKEN" --yes
+        run: npx vercel@50.22.1 deploy --prod --scope cjp442 --token "$VERCEL_TOKEN" --yes
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
