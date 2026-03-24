@@ -1,100 +1,174 @@
-import { useState } from 'react'
-import { RigidBody } from '@react-three/rapier'
-import { Text } from '@react-three/drei'
-import Chair from '../objects/Chair'
-import Portal from '../objects/Portal'
-import Avatar from '../player/Avatar'
-import PlayerController from '../player/PlayerController'
-import { useGameStore } from '../utils/GameState'
-import { GameChair, Portal as PortalType } from '../../types/game'
-import { AnimationState } from '../player/AnimationManager'
+import React, { useState } from 'react';
+import { OrbitControls, Text } from '@react-three/drei';
 
-const EXIT_PORTAL: PortalType = {
-  id: 'exit-to-lobby',
-  name: 'Back to Lobby',
-  position: { x: 0, y: 0, z: 6 },
-  rotation: Math.PI,
-  targetScene: 'lobby',
-  targetRoomId: '',
-  isActive: true,
-}
-
-const ROOM_CHAIRS: GameChair[] = [
-  { id: 'mr-chair-1', position: { x: -3, y: 0, z: -1 }, rotation: 0.5, isOccupied: false },
-  { id: 'mr-chair-2', position: { x: 3, y: 0, z: -1 }, rotation: -0.5, isOccupied: false },
-  { id: 'mr-sofa-1', position: { x: 0, y: 0, z: 1 }, rotation: Math.PI, isOccupied: false },
-]
+type Scene = 'lobby' | 'host' | 'member';
 
 interface MemberRoomSceneProps {
-  roomId: string
-  onSceneChange: (scene: 'lobby' | 'host_room' | 'member_room', roomId: string) => void
+  memberId?: string;
+  onNavigate: (scene: Scene) => void;
 }
 
-export default function MemberRoomScene({ roomId, onSceneChange }: MemberRoomSceneProps) {
-  const { playerPosition, playerRotation, isSitting } = useGameStore()
-  const [animState, setAnimState] = useState<AnimationState>('idle')
-  const [chairs, setChairs] = useState<GameChair[]>(ROOM_CHAIRS)
+const MemberRoomScene: React.FC<MemberRoomSceneProps> = ({ memberId, onNavigate }) => {
+  const [layout, setLayout] = useState<'default' | 'cozy' | 'grand'>('default');
+
+  const floorColors: Record<string, string> = {
+    default: '#4A3520',
+    cozy: '#6B4C2A',
+    grand: '#2C1F0E',
+  };
+
+  const wallColors: Record<string, string> = {
+    default: '#5C4A30',
+    cozy: '#7A5C3A',
+    grand: '#3A2A18',
+  };
 
   return (
     <>
-      <ambientLight intensity={0.5} color="#ffeecc" />
-      <pointLight position={[0, 5, 0]} intensity={2} color="#ffaa44" distance={15} />
-      <pointLight position={[-4, 3, -3]} intensity={1} color="#ff8833" distance={8} />
-      <pointLight position={[4, 3, -3]} intensity={1} color="#ff8833" distance={8} />
-      <PlayerController
-        onAnimationChange={setAnimState}
-        portals={[EXIT_PORTAL]}
-        chairs={chairs}
-        onPortalEnter={(p) => onSceneChange(p.targetScene, p.targetRoomId)}
-        onSit={(c) => setChairs(prev => prev.map(ch => ch.id === c.id ? { ...ch, isOccupied: true } : ch))}
-        onStand={() => setChairs(prev => prev.map(c => c.isOccupied ? { ...c, isOccupied: false } : c))}
+      {/* Lighting */}
+      <ambientLight intensity={0.6} color="#ffeedd" />
+      <pointLight position={[0, 6, 0]} intensity={3} color="#ffcc88" distance={18} decay={2} />
+      <pointLight position={[-5, 3, 3]} intensity={1.2} color="#ff8844" distance={8} decay={2} />
+      <pointLight position={[5, 3, 3]} intensity={1.2} color="#ff8844" distance={8} decay={2} />
+      <directionalLight position={[3, 6, 3]} intensity={0.8} color="#ffe8cc" />
+
+      <OrbitControls
+        enablePan={false}
+        minPolarAngle={Math.PI / 6}
+        maxPolarAngle={Math.PI / 2.2}
+        minDistance={3}
+        maxDistance={14}
+        target={[0, 2, 0]}
       />
-      <RigidBody type="fixed" colliders="cuboid">
-        <mesh position={[0, -0.05, 0]} receiveShadow>
-          <boxGeometry args={[16, 0.1, 16]} />
-          <meshStandardMaterial color="#663322" roughness={0.9} />
-        </mesh>
-      </RigidBody>
-      <mesh position={[0, 0.001, 0]}>
-        <boxGeometry args={[10, 0.01, 8]} />
-        <meshStandardMaterial color="#8b4513" roughness={1} />
-      </mesh>
-      <mesh position={[0, 3, -7]}><boxGeometry args={[16, 6, 0.3]} /><meshStandardMaterial color="#f5deb3" /></mesh>
-      <mesh position={[0, 3, 7]}><boxGeometry args={[16, 6, 0.3]} /><meshStandardMaterial color="#f5deb3" /></mesh>
-      <mesh position={[-7, 3, 0]}><boxGeometry args={[0.3, 6, 16]} /><meshStandardMaterial color="#f5deb3" /></mesh>
-      <mesh position={[7, 3, 0]}><boxGeometry args={[0.3, 6, 16]} /><meshStandardMaterial color="#f5deb3" /></mesh>
-      <mesh position={[0, 6, 0]}>
-        <boxGeometry args={[16, 0.3, 16]} />
-        <meshStandardMaterial color="#fffff0" />
-      </mesh>
-      <group position={[0, 0, -6.5]}>
-        <mesh position={[0, 1, 0]}>
-          <boxGeometry args={[2.5, 2, 0.5]} />
-          <meshStandardMaterial color="#8b7355" roughness={0.8} />
-        </mesh>
-        <mesh position={[0, 0.7, 0.1]}>
-          <boxGeometry args={[1.5, 1.2, 0.3]} />
-          <meshBasicMaterial color="#111111" />
-        </mesh>
-        <pointLight position={[0, 0.8, -0.2]} intensity={2} color="#ff5500" distance={6} />
-      </group>
-      <mesh position={[0, 0.55, -1.5]} castShadow receiveShadow>
-        <boxGeometry args={[2.5, 0.1, 1.2]} />
-        <meshStandardMaterial color="#6b4c2a" roughness={0.6} />
-      </mesh>
-      {chairs.map(chair => (
-        <Chair
-          key={chair.id}
-          chair={chair}
-          onSit={(c) => setChairs(prev => prev.map(ch => ch.id === c.id ? { ...ch, isOccupied: true } : ch))}
-          onStand={() => setChairs(prev => prev.map(c => c.isOccupied ? { ...c, isOccupied: false } : c))}
-          isCurrentPlayerSitting={isSitting}
-          playerPosition={playerPosition}
+
+      {/* Floor */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]} receiveShadow>
+        <planeGeometry args={[16, 16]} />
+        <meshStandardMaterial
+          color={floorColors[layout]}
+          roughness={0.6}
+          metalness={0.1}
+          emissive={floorColors[layout]}
+          emissiveIntensity={0.2}
         />
+      </mesh>
+
+      {/* Walls */}
+      <mesh position={[0, 4, -8]} receiveShadow>
+        <planeGeometry args={[16, 10]} />
+        <meshStandardMaterial
+          color={wallColors[layout]}
+          roughness={0.85}
+          emissive={wallColors[layout]}
+          emissiveIntensity={0.15}
+        />
+      </mesh>
+      <mesh rotation={[0, Math.PI / 2, 0]} position={[-8, 4, 0]} receiveShadow>
+        <planeGeometry args={[16, 10]} />
+        <meshStandardMaterial
+          color={wallColors[layout]}
+          roughness={0.85}
+          emissive={wallColors[layout]}
+          emissiveIntensity={0.15}
+        />
+      </mesh>
+      <mesh rotation={[0, -Math.PI / 2, 0]} position={[8, 4, 0]} receiveShadow>
+        <planeGeometry args={[16, 10]} />
+        <meshStandardMaterial
+          color={wallColors[layout]}
+          roughness={0.85}
+          emissive={wallColors[layout]}
+          emissiveIntensity={0.15}
+        />
+      </mesh>
+
+      {/* Central display table */}
+      <mesh position={[0, 0.5, 0]} castShadow receiveShadow>
+        <boxGeometry args={[4, 1, 2]} />
+        <meshStandardMaterial
+          color="#3A2210"
+          roughness={0.5}
+          metalness={0.2}
+          emissive="#1a0e04"
+          emissiveIntensity={0.25}
+        />
+      </mesh>
+
+      {/* Room title */}
+      <Text
+        position={[0, 7, -7.8]}
+        fontSize={0.55}
+        color="#FFD700"
+        anchorX="center"
+        anchorY="middle"
+        outlineWidth={0.03}
+        outlineColor="#000000"
+      >
+        Member Room {memberId ? `— ${memberId}` : ''}
+      </Text>
+
+      {/* Layout selection buttons */}
+      {(['default', 'cozy', 'grand'] as const).map((layoutOption, i) => (
+        <group
+          key={layoutOption}
+          position={[-2 + i * 2, 2.5, -7.5]}
+          onClick={() => setLayout(layoutOption)}
+          onPointerOver={() => { document.body.style.cursor = 'pointer'; }}
+          onPointerOut={() => { document.body.style.cursor = 'auto'; }}
+        >
+          <mesh>
+            <boxGeometry args={[1.6, 0.6, 0.15]} />
+            <meshStandardMaterial
+              color={layout === layoutOption ? '#FFD700' : '#5C3317'}
+              emissive={layout === layoutOption ? '#AA8800' : '#1a0e04'}
+              emissiveIntensity={0.35}
+              roughness={0.5}
+              metalness={0.2}
+            />
+          </mesh>
+          <Text
+            position={[0, 0, 0.1]}
+            fontSize={0.22}
+            color={layout === layoutOption ? '#000000' : '#FFFFFF'}
+            anchorX="center"
+            anchorY="middle"
+          >
+            {layoutOption.charAt(0).toUpperCase() + layoutOption.slice(1)}
+          </Text>
+        </group>
       ))}
-      <Text position={[0, 5, -6.6]} fontSize={0.4} color="#8b4513" anchorX="center">{`Room: ${roomId}`}</Text>
-      <Portal portal={EXIT_PORTAL} onEnter={(p) => onSceneChange(p.targetScene, p.targetRoomId)} playerPosition={playerPosition} />
-      <Avatar position={playerPosition} rotation={playerRotation} animState={animState} isLocalPlayer />
+
+      {/* Back to Lobby button */}
+      <group
+        position={[0, 1.2, 6]}
+        onClick={() => onNavigate('lobby')}
+        onPointerOver={() => { document.body.style.cursor = 'pointer'; }}
+        onPointerOut={() => { document.body.style.cursor = 'auto'; }}
+      >
+        <mesh>
+          <boxGeometry args={[3, 0.8, 0.2]} />
+          <meshStandardMaterial
+            color="#2E5E2E"
+            emissive="#2E5E2E"
+            emissiveIntensity={0.3}
+            roughness={0.5}
+            metalness={0.2}
+          />
+        </mesh>
+        <Text
+          position={[0, 0, 0.15]}
+          fontSize={0.3}
+          color="#FFFFFF"
+          anchorX="center"
+          anchorY="middle"
+          outlineWidth={0.02}
+          outlineColor="#000000"
+        >
+          ← Back to Lobby
+        </Text>
+      </group>
     </>
-  )
-}
+  );
+};
+
+export default MemberRoomScene;
