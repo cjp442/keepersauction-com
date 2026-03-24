@@ -35,8 +35,8 @@ export function TokenProvider({ children }: { children: ReactNode }) {
     setLoading(false)
   }, [])
 
-  const addTokens = (amount: number, _description: string): Promise<void> => {
-    if (!tokens) return Promise.resolve()
+  const addTokens = (amount: number, description: string): Promise<void> => {
+    if (!tokens) return Promise.reject(new Error('Token wallet not loaded'))
     const updated = {
       ...tokens,
       balance: tokens.balance + amount,
@@ -44,11 +44,14 @@ export function TokenProvider({ children }: { children: ReactNode }) {
     }
     setTokens(updated)
     localStorage.setItem('tokens', JSON.stringify(updated))
+    // Log description for future backend integration
+    console.debug('[TokenContext] addTokens:', amount, description)
     return Promise.resolve()
   }
 
-  const deductTokens = (amount: number, _description: string): Promise<void> => {
-    if (!tokens || tokens.balance < amount) return Promise.resolve()
+  const deductTokens = (amount: number, description: string): Promise<void> => {
+    if (!tokens) return Promise.reject(new Error('Token wallet not loaded'))
+    if (tokens.balance < amount) return Promise.reject(new Error('Insufficient Keeper Coins balance'))
     const updated = {
       ...tokens,
       balance: tokens.balance - amount,
@@ -56,11 +59,13 @@ export function TokenProvider({ children }: { children: ReactNode }) {
     }
     setTokens(updated)
     localStorage.setItem('tokens', JSON.stringify(updated))
+    console.debug('[TokenContext] deductTokens:', amount, description)
     return Promise.resolve()
   }
 
   const moveToSafe = (amount: number): Promise<void> => {
-    if (!tokens || tokens.balance < amount) return Promise.resolve()
+    if (!tokens) return Promise.reject(new Error('Token wallet not loaded'))
+    if (tokens.balance < amount) return Promise.reject(new Error('Insufficient balance to move to safe'))
     const updated = {
       ...tokens,
       balance: tokens.balance - amount,
@@ -73,7 +78,8 @@ export function TokenProvider({ children }: { children: ReactNode }) {
   }
 
   const moveFromSafe = (amount: number): Promise<void> => {
-    if (!tokens || tokens.safe_balance < amount) return Promise.resolve()
+    if (!tokens) return Promise.reject(new Error('Token wallet not loaded'))
+    if (tokens.safe_balance < amount) return Promise.reject(new Error('Insufficient safe balance'))
     const updated = {
       ...tokens,
       balance: tokens.balance + amount,

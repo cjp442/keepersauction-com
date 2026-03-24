@@ -14,16 +14,25 @@ export default function TokenBar() {
   if (!user || loading || !tokens) return null
 
   const handleQuickAdd = async (amount: (typeof QUICK_ADD_AMOUNTS)[number]) => {
-    await addTokens(amount, 'Quick purchase')
+    try {
+      await addTokens(amount, 'Quick purchase')
+    } catch {
+      // silently ignore — wallet may not be loaded yet
+    }
   }
 
   const handleMoveToSafe = async () => {
     const amount = parseInt(safeMoveInput, 10)
     if (isNaN(amount) || amount <= 0 || amount > tokens.balance) return
     setIsMoving(true)
-    await moveToSafe(amount)
-    setSafeMoveInput('')
-    setIsMoving(false)
+    try {
+      await moveToSafe(amount)
+      setSafeMoveInput('')
+    } catch {
+      // insufficient balance already guarded above
+    } finally {
+      setIsMoving(false)
+    }
   }
 
   return (
@@ -98,8 +107,13 @@ export default function TokenBar() {
                 onClick={async () => {
                   if (tokens.balance === 0) return
                   setIsMoving(true)
-                  await moveToSafe(tokens.balance)
-                  setIsMoving(false)
+                  try {
+                    await moveToSafe(tokens.balance)
+                  } catch {
+                    // balance is non-zero so this shouldn't fail
+                  } finally {
+                    setIsMoving(false)
+                  }
                 }}
                 disabled={isMoving || tokens.balance === 0}
                 className="w-full text-xs text-emerald-400 hover:text-emerald-300 disabled:text-slate-600 transition-colors text-left"
