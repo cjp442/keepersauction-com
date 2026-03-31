@@ -1,1 +1,64 @@
-import React, { useState } from 'react';\nimport Modal from 'react-modal';\n\nconst TokenShop = () => {\n  const [coinAmount, setCoinAmount] = useState(0);\n  const [paymentMethod, setPaymentMethod] = useState('');\n  const [modalIsOpen, setModalIsOpen] = useState(false);\n\n  const usdPrice = coinAmount * 0.01; // Example pricing: $0.01 per coin\n  const taxRate = 0.1; // 10% tax\n  const taxAmount = usdPrice * taxRate;\n  const totalPrice = usdPrice + taxAmount;\n\n  const handlePurchase = () => {\n    setModalIsOpen(true);\n  };\n\n  const closeModal = () => {\n    setModalIsOpen(false);\n  };\n\n  return (\n    <div>\n      <h1>Token Shop</h1>\n      <label>Coin Amount:</label>\n      <input type='number' value={coinAmount} onChange={(e) => setCoinAmount(e.target.value)} />\n      <p>Price in USD: ${usdPrice.toFixed(2)}</p>\n      <p>Tax: ${taxAmount.toFixed(2)}</p>\n      <p>Total Price: ${totalPrice.toFixed(2)}</p>\n      <h3>Payment Methods</h3>\n      <select onChange={(e) => setPaymentMethod(e.target.value)}>\n        <option value=''>Select Payment Method</option>\n        <option value='credit_card'>Credit Card</option>\n        <option value='paypal'>PayPal</option>\n      </select>\n      <button onClick={handlePurchase}>Purchase</button>\n\n      <Modal isOpen={modalIsOpen} onRequestClose={closeModal}>\n        <h2>Confirmation</h2>\n        <p>You have purchased {coinAmount} coins for ${totalPrice.toFixed(2)}.</p>\n        <button onClick={closeModal}>Close</button>\n      </Modal>\n    </div>\n  );\n};\n\nexport default TokenShop;
+import React, { useState } from 'react';
+import { createTokenCheckoutSession } from '../services/paymentService';
+
+const TOKEN_PACKAGES = [
+  { tokens: 100, priceUsd: 1.0 },
+  { tokens: 500, priceUsd: 4.5 },
+  { tokens: 1000, priceUsd: 8.0 },
+];
+
+const TokenShop: React.FC = () => {
+  const [selected, setSelected] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const pkg = TOKEN_PACKAGES[selected];
+
+  const handlePurchase = async () => {
+    setError(null);
+    setLoading(true);
+    try {
+      const userId = localStorage.getItem('userId') ?? 'guest';
+      const { url } = await createTokenCheckoutSession({
+        userId,
+        tokenAmount: pkg.tokens,
+      });
+      window.location.href = url;
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Purchase failed');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="p-6 max-w-md mx-auto">
+      <h1 className="text-2xl font-bold mb-4">Token Shop</h1>
+      <div className="space-y-3 mb-6">
+        {TOKEN_PACKAGES.map((p, i) => (
+          <label key={i} className="flex items-center gap-3 cursor-pointer">
+            <input
+              type="radio"
+              name="package"
+              checked={selected === i}
+              onChange={() => setSelected(i)}
+            />
+            <span>
+              {p.tokens} tokens — ${p.priceUsd.toFixed(2)}
+            </span>
+          </label>
+        ))}
+      </div>
+      {error && <p className="text-red-500 mb-3">{error}</p>}
+      <button
+        onClick={handlePurchase}
+        disabled={loading}
+        className="bg-amber-600 text-white px-6 py-2 rounded disabled:opacity-50"
+      >
+        {loading ? 'Redirecting…' : 'Buy Now'}
+      </button>
+    </div>
+  );
+};
+
+export default TokenShop;
