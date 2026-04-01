@@ -1,51 +1,35 @@
-import Stripe from 'stripe';
+/**
+ * Client-side payment service.
+ *
+ * Stripe secret logic is intentionally NOT present here.
+ * All Stripe operations that require the secret key are handled
+ * server-side via Vercel Serverless Functions under /api/stripe/*.
+ *
+ * Use VITE_STRIPE_PUBLIC_KEY (public key only) for client-side
+ * Stripe.js initialisation (e.g. loading Elements / Checkout).
+ */
 
-// Initialize Stripe
-const stripe = new Stripe('your-stripe-secret-key', {
-    apiVersion: '2020-08-27',
-});
+export const STRIPE_PUBLIC_KEY = import.meta.env.VITE_STRIPE_PUBLIC_KEY as string | undefined;
 
-// Function to process payment
-export const processPayment = async (amount, currency, paymentMethodId) => {
-    try {
-        const paymentIntent = await stripe.paymentIntents.create({
-            amount,
-            currency,
-            payment_method: paymentMethodId,
-            confirmations: 'required',
-        });
-        return paymentIntent;
-    } catch (error) {
-        throw new Error(`Payment processing failed: ${error.message}`);
-    }
-};
+/**
+ * Create a Stripe Checkout session for purchasing tokens.
+ * Delegates to the /api/stripe/create-checkout-session serverless function.
+ */
+export async function createTokenCheckoutSession(params: {
+  userId: string;
+  tokenAmount: number;
+  priceId?: string;
+}): Promise<{ url: string }> {
+  const response = await fetch('/api/stripe/create-checkout-session', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(params),
+  });
 
-// Function to handle subscriptions
-export const createSubscription = async (customerId, priceId) => {
-    try {
-        const subscription = await stripe.subscriptions.create({
-            customer: customerId,
-            items: [{ price: priceId }],
-        });
-        return subscription;
-    } catch (error) {
-        throw new Error(`Subscription creation failed: ${error.message}`);
-    }
-};
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({ message: 'Unknown error' }));
+    throw new Error(error.message ?? 'Failed to create checkout session');
+  }
 
-// Function to manage transactions
-export const manageTransaction = async (transactionId) => {
-    try {
-        const transaction = await stripe.balanceTransactions.retrieve(transactionId);
-        return transaction;
-    } catch (error) {
-        throw new Error(`Transaction retrieval failed: ${error.message}`);
-    }
-};
-
-// Export all functions
-export default {
-    processPayment,
-    createSubscription,
-    manageTransaction,
-};
+  return response.json() as Promise<{ url: string }>;
+}
