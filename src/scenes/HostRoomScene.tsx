@@ -12,11 +12,11 @@ const HostRoomScene: React.FC<HostRoomSceneProps> = ({ onBack }) => {
     <group>
       <mesh position={[0, 0, 0]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
         <planeGeometry args={[25, 25]} />
-        <meshStandardMaterial color={0x1a0f0a} metallic={0.15} roughness={0.85} />
+        <meshStandardMaterial color={0x1a0f0a} metalness={0.15} roughness={0.85} />
       </mesh>
       <mesh position={[0, 2, -10]} castShadow receiveShadow>
         <boxGeometry args={[10, 4, 0.5]} />
-        <meshStandardMaterial color={0x0a0605} metallic={0.2} roughness={0.8} />
+        <meshStandardMaterial color={0x0a0605} metalness={0.2} roughness={0.8} />
       </mesh>
       {[...Array(10)].map((_, i) => {
         const angle = (Math.PI / 10) * i - Math.PI / 20

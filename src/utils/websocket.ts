@@ -41,15 +41,15 @@ class WebSocketClient {
         }
     }
 
-    private handleBidUpdate(message: any) {
+    private handleBidUpdate(message: unknown) {
         console.log('Bid Update:', message);
     }
 
-    private handleSyncData(message: any) {
+    private handleSyncData(message: unknown) {
         console.log('Sync Data:', message);
     }
 
-    private handleAuctionUpdate(message: any) {
+    private handleAuctionUpdate(message: unknown) {
         console.log('Auction Update:', message);
     }
 
