@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
 const UserLedger = () => {
-  const [transactions, setTransactions] = useState([]);
+  const [transactions, setTransactions] = useState<{ id: number; type: string; amount: number; date: string }[]>([]);
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
 

@@ -1,40 +1,48 @@
 // src/services/adminService.ts
+import type { AdminUser } from '../types/admin'
 
 class AdminService {
-    // Function to get all members
-    static getAllMembers() {
+    static async getUsers(): Promise<AdminUser[]> {
+        return [];
+    }
+
+    static async getAllMembers(): Promise<AdminUser[]> {
+        return [];
+    }
+
+    static async getAllTransactions() {
+        return [];
+    }
+
+    static async banUser(_userId: string, _reason?: string, _bannedBy?: string) {
         // Implementation here
     }
 
-    // Function to get all transactions
-    static getAllTransactions() {
+    static async unbanUser(_userId: string, _unbannedBy?: string) {
         // Implementation here
     }
 
-    // Function to ban a user
-    static banUser(userId: string) {
+    static async setUserRole(_userId: string, _role: string, _adminId?: string) {
         // Implementation here
     }
 
-    // Function to delete a user
-    static deleteUser(userId: string) {
+    static async deleteUser(_userId: string) {
         // Implementation here
     }
 
-    // Function to get admin logs
-    static getAdminLogs() {
+    static async getAdminLogs() {
+        return [];
+    }
+
+    static updateSettings(_newSettings: object) {
         // Implementation here
     }
 
-    // Function to update settings
-    static updateSettings(newSettings: object) {
-        // Implementation here
-    }
-
-    // Function to export data
     static exportData() {
         // Implementation here
     }
 }
 
 export default AdminService;
+export const adminService = AdminService;
+

@@ -12,7 +12,7 @@ const MemberRoomScene: React.FC<MemberRoomSceneProps> = ({ onBack }) => {
     <group>
       <mesh position={[0, 0, 0]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
         <planeGeometry args={[20, 20]} />
-        <meshStandardMaterial color={0x2a1810} metallic={0.1} roughness={0.8} />
+        <meshStandardMaterial color={0x2a1810} metalness={0.1} roughness={0.8} />
       </mesh>
       {[...Array(6)].map((_, i) => {
         const row = Math.floor(i / 3)

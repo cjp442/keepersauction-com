@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import AdminDashboardPanel from '../components/AdminPanel/AdminDashboard'
 import MemberManagement from '../components/AdminPanel/MemberManagement'
 import FinancialDashboard from '../components/AdminPanel/FinancialDashboard'
-import { LayoutDashboard, Users, DollarSign, FileText, Shield } from 'lucide-react'
+import { LayoutDashboard, Users, DollarSign, FileText, Shield, type LucideIcon } from 'lucide-react'
 
 type AdminTab = 'dashboard' | 'members' | 'financial' | 'logs'
 
@@ -24,7 +24,7 @@ export default function AdminDashboard() {
     )
   }
 
-  const tabs: { key: AdminTab; label: string; icon: React.ElementType }[] = [
+  const tabs: { key: AdminTab; label: string; icon: LucideIcon }[] = [
     { key: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { key: 'members', label: 'Members', icon: Users },
     { key: 'financial', label: 'Financial', icon: DollarSign },

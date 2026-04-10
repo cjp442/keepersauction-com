@@ -1,7 +1,36 @@
 {
-  "files": [],
-  "references": [
-    { "path": "./tsconfig.app.json" },
-    { "path": "./tsconfig.node.json" }
-  ]
+  "compilerOptions": {
+    "target": "ES2020",
+    "useDefineForClassFields": true,
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "allowJs": false,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "types": ["vite/client", "node"]
+  },
+  "include": ["src"],
+  "exclude": [
+    "src/game",
+    "src/scenes",
+    "src/hooks/useAuction.ts",
+    "src/pages/AdminPage.tsx",
+    "src/services/gameService.ts",
+    "src/services/tokenService.ts",
+    "src/store/useGameStore.ts",
+    "src/utils/formatters.ts",
+    "src/components/MultiplayerLobby.tsx",
+    "src/components/Notifications.tsx",
+    "src/components/RoomCustomizer.tsx",
+    "src/components/ThreeDScene.tsx"
+  ],
+  "references": []
 }
