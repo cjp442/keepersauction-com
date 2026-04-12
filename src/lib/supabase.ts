@@ -1,5 +1,3 @@
-// src/lib/supabase.ts
-
 import { createClient } from '@supabase/supabase-js';
 
 // Initialize Supabase client
@@ -29,12 +27,11 @@ async function handleTransaction() {
     }
     console.log('Transaction success:', data);
 }
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string;
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string;
 
-// Error handling helper function
-function handleError(error) {
-    if (error) {
-        console.error('Error:', error.message);
-    }
+if (!supabaseUrl || !supabaseAnonKey) {
+  throw new Error('Missing VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY environment variables');
 }
 
-export { supabase, setupRealTimeSubscription, handleTransaction, handleError };
+export const supabase = createClient(supabaseUrl, supabaseAnonKey);

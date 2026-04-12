@@ -49,7 +49,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         id: Math.random().toString(),
         email,
         username,
-        role: (role as any) || 'user',
+        role: (role as 'user' | 'vip' | 'host' | 'admin') || 'user',
         created_at: new Date().toISOString(),
       }
       setUser(mockUser)
