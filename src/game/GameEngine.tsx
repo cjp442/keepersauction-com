@@ -1,6 +1,11 @@
 import React, { useState } from 'react'
 import { Canvas } from '@react-three/fiber'
 import { OrbitControls, PerspectiveCamera } from '@react-three/drei'
+import LobbyScene from './scenes/LobbyScene'
+import HostRoomScene from './scenes/HostRoomScene'
+import MemberRoomScene from './scenes/MemberRoomScene'
+import ChatSystem from '../components/ChatSystem'
+import PlayerProfile from '../components/PlayerProfile'
 import LobbyScene from '../scenes/LobbyScene'
 import HostRoomScene from '../scenes/HostRoomScene'
 import MemberRoomScene from '../scenes/MemberRoomScene'
@@ -12,17 +17,12 @@ const GameEngine: React.FC = () => {
   const renderScene = () => {
     switch (currentScene) {
       case 'host':
-        return <HostRoomScene onBack={() => setCurrentScene('lobby')} />
+        return <HostRoomScene onNavigate={setCurrentScene} />
       case 'member':
-        return <MemberRoomScene onBack={() => setCurrentScene('lobby')} />
+        return <MemberRoomScene onNavigate={setCurrentScene} />
       case 'lobby':
       default:
-        return (
-          <LobbyScene
-            onHostDoor={() => setCurrentScene('host')}
-            onMemberDoor={() => setCurrentScene('member')}
-          />
-        )
+        return <LobbyScene onNavigate={setCurrentScene} />
     }
   }
 
@@ -72,6 +72,7 @@ const GameEngine: React.FC = () => {
       <div style={{ position: 'absolute', bottom: '20px', right: '20px', zIndex: 100 }}>
         <button
           onClick={() => setLightingMode(lightingMode === 'bright' ? 'ambient' : 'bright')}
+          style={{ padding: '12px 24px', backgroundColor: lightingMode === 'bright' ? '#ffd700' : '#333', color: lightingMode === 'bright' ? '#000' : '#fff', border: `2px solid ${lightingMode === 'bright' ? '#ffd700' : '#fff'}`, borderRadius: '6px', cursor: 'pointer', fontSize: '14px', fontWeight: 'bold', transition: 'all 0.3s ease', boxShadow: '0 4px 15px rgba(0,0,0,0.3)' }}
           style={{
             padding: '12px 24px',
             backgroundColor: lightingMode === 'bright' ? '#ffd700' : '#333',
