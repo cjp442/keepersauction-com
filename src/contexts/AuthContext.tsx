@@ -1,60 +1,69 @@
 import { createContext, useContext, useEffect, useState } from 'react';
+import { User } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
 
-const AuthContext = createContext();
+interface AuthContextValue {
+  user: User | null;
+  role: string;
+  loading: boolean;
+  login: (email: string, password: string) => Promise<{ user: User | null; error: Error | null }>;
+  signup: (email: string, password: string, username: string, role?: string) => Promise<{ user: User | null; error: Error | null }>;
+  logout: () => Promise<void>;
+  refreshUser: () => Promise<void>;
+}
 
-export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
+const AuthContext = createContext<AuthContextValue | null>(null);
+
+export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [role, setRole] = useState('user');
 
   useEffect(() => {
-    const session = supabase.auth.session();
-    setUser(session?.user);
-
-    const fetchUserRole = async () => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
       if (session?.user) {
-        const { data, error } = await supabase
+        supabase
           .from('users')
           .select('role')
           .eq('id', session.user.id)
-          .single();
-        if (data) setRole(data.role);
+          .single()
+          .then(({ data }) => {
+            if (data) setRole(data.role);
+          });
       }
       setLoading(false);
-    };
+    });
 
-    fetchUserRole();
-
-    const { data: authListener } = supabase.auth.onAuthStateChange((_, session) => {
-      setUser(session?.user);
+    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
     });
 
     return () => {
-      authListener.unsubscribe();
+      authListener.subscription.unsubscribe();
     };
   }, []);
 
-  const login = async (email, password) => {
+  const login = async (email: string, password: string) => {
     setLoading(true);
-    const { user, error } = await supabase.auth.signIn({ email, password });
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     setLoading(false);
-    return { user, error };
+    return { user: data.user, error };
   };
 
-  const signup = async (email, password, username, role = 'user') => {
+  const signup = async (email: string, password: string, username: string, role = 'user') => {
     setLoading(true);
-    const { user, error } = await supabase.auth.signUp({ email, password });
-    if (user) {
+    const { data, error } = await supabase.auth.signUp({ email, password });
+    if (data.user) {
       const { error: userError } = await supabase
         .from('users')
-        .upsert({ id: user.id, email, username, role });
+        .upsert({ id: data.user.id, email, username, role });
       if (userError) {
         console.error(userError.message);
       }
     }
     setLoading(false);
-    return { user, error };
+    return { user: data.user, error };
   };
 
   const logout = async () => {
@@ -62,13 +71,16 @@ export const AuthProvider = ({ children }) => {
   };
 
   const refreshUser = async () => {
-    const session = supabase.auth.session();
-    setUser(session?.user);
-    // Fetching role could be included again here if desired
+    const { data: { session } } = await supabase.auth.getSession();
+    setUser(session?.user ?? null);
   };
 
-  const value = { user, role, login, signup, logout, refreshUser, loading };
+  const value: AuthContextValue = { user, role, login, signup, logout, refreshUser, loading };
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
-export const useAuth = () => useContext(AuthContext);
+export const useAuth = () => {
+  const ctx = useContext(AuthContext);
+  if (!ctx) throw new Error('useAuth must be used within AuthProvider');
+  return ctx;
+};

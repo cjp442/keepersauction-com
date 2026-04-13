@@ -21,22 +21,6 @@
     }
   },
   "include": ["src"],
-  "references": [{ "path": "./tsconfig.node.json" }]
-    "allowJs": false,
-    "skipLibCheck": true,
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "strict": true,
-    "forceConsistentCasingInFileNames": true,
-    "module": "ESNext",
-    "moduleResolution": "Node",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "noEmit": true,
-    "jsx": "react-jsx",
-    "types": ["vite/client", "node"]
-  },
-  "include": ["src"],
   "exclude": [
     "src/game",
     "src/scenes",
@@ -51,5 +35,5 @@
     "src/components/RoomCustomizer.tsx",
     "src/components/ThreeDScene.tsx"
   ],
-  "references": []
+  "references": [{ "path": "./tsconfig.node.json" }]
 }

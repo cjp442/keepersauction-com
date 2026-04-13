@@ -35,7 +35,7 @@ export default function AdminDashboard() {
     <div className="max-w-7xl mx-auto px-4 py-8">
       <div className="flex items-center justify-between mb-8">
         <h1 className="text-3xl font-bold text-amber-400">Admin Control Panel</h1>
-        <div className="text-sm text-slate-400">Logged in as <span className="text-white font-medium">{user.username}</span></div>
+        <div className="text-sm text-slate-400">Logged in as <span className="text-white font-medium">{(user.user_metadata?.username as string | undefined) ?? user.email}</span></div>
       </div>
       <div className="flex gap-2 mb-8 border-b border-slate-700 pb-0">
         {tabs.map(tab => (

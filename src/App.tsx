@@ -1,6 +1,5 @@
 import './styles/global.css';
 import React from 'react'
-import GameEngine from './game/GameEngine'
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { TokenProvider } from './contexts/TokenContext';
