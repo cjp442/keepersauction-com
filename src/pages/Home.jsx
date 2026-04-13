@@ -1,1 +1,1 @@
-export const Home = () => <div style={{color:'gold',background:'#0f172a',padding:'40px'}}><h1>Keepers Project</h1><h2>Basic Membership: $14.99/mo</h2></div>;
+export const Home = () => <div style={{color:'gold',background:'#0f172a',padding:'40px',textAlign:'center',minHeight:'100vh'}}><h1>Keepers Auction</h1><div style={{marginTop:'40px',border:'2px solid gold',padding:'20px',display:'inline-block'}}><h2>Basic Membership</h2><p>.99 / Month</p></div></div>
