@@ -28,8 +28,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           .select('role')
           .eq('id', session.user.id)
           .single()
-          .then(({ data }) => {
-            if (data) setRole(data.role);
+          .then(({ data, error }) => {
+            if (error) console.error('Failed to fetch role:', error);
+            else if (data) setRole(data.role);
           });
       }
       setLoading(false);

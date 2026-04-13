@@ -43,7 +43,7 @@ export default function Header() {
           )}
           {user ? (
             <div className="flex items-center gap-2">
-              <span className="text-sm">{(user.user_metadata?.username as string | undefined) ?? user.email}</span>
+              <span className="text-sm">{user.user_metadata?.username ?? user.email}</span>
               <button
                 onClick={() => logout()}
                 className="px-3 py-1 bg-slate-700 hover:bg-slate-600 rounded transition"

@@ -11,7 +11,7 @@ export default function SettingsPage() {
         <div className="bg-slate-800 p-6 rounded-lg">
           <div className="mb-6">
             <label className="block text-sm font-medium mb-2">Username</label>
-            <p className="text-white">{(user.user_metadata?.username as string | undefined) ?? user.email}</p>
+            <p className="text-white">{user.user_metadata?.username ?? user.email}</p>
           </div>
           <div className="mb-6">
             <label className="block text-sm font-medium mb-2">Email</label>
