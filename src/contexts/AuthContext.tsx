@@ -1,81 +1,74 @@
-import { createContext, useContext, ReactNode, useState, useEffect } from 'react'
-import { User } from '../types'
+import { createContext, useContext, useEffect, useState } from 'react';
+import { supabase } from '../lib/supabase';
 
-interface AuthContextType {
-  user: User | null
-  loading: boolean
-  login: (email: string, password: string) => Promise<void>
-  signup: (email: string, password: string, username: string, role: string) => Promise<void>
-  logout: () => Promise<void>
-}
+const AuthContext = createContext();
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined)
-
-export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null)
-  const [loading, setLoading] = useState(true)
+export const AuthProvider = ({ children }) => {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [role, setRole] = useState('user');
 
   useEffect(() => {
-    // Initialize user from localStorage or API
-    const storedUser = localStorage.getItem('user')
-    if (storedUser) {
-      setUser(JSON.parse(storedUser))
-    }
-    setLoading(false)
-  }, [])
+    const session = supabase.auth.session();
+    setUser(session?.user);
 
-  const login = async (email: string, _password: string) => {
-    try {
-      // API call would go here
-      const mockUser: User = {
-        id: '1',
-        email,
-        username: email.split('@')[0],
-        role: 'user',
-        created_at: new Date().toISOString(),
+    const fetchUserRole = async () => {
+      if (session?.user) {
+        const { data, error } = await supabase
+          .from('users')
+          .select('role')
+          .eq('id', session.user.id)
+          .single();
+        if (data) setRole(data.role);
       }
-      setUser(mockUser)
-      localStorage.setItem('user', JSON.stringify(mockUser))
-    } catch (error) {
-      console.error('Login error:', error)
-      throw error
-    }
-  }
+      setLoading(false);
+    };
 
-  const signup = async (email: string, _password: string, username: string, role: string) => {
-    try {
-      // API call would go here
-      const mockUser: User = {
-        id: Math.random().toString(),
-        email,
-        username,
-        role: (role as 'user' | 'vip' | 'host' | 'admin') || 'user',
-        created_at: new Date().toISOString(),
+    fetchUserRole();
+
+    const { data: authListener } = supabase.auth.onAuthStateChange((_, session) => {
+      setUser(session?.user);
+    });
+
+    return () => {
+      authListener.unsubscribe();
+    };
+  }, []);
+
+  const login = async (email, password) => {
+    setLoading(true);
+    const { user, error } = await supabase.auth.signIn({ email, password });
+    setLoading(false);
+    return { user, error };
+  };
+
+  const signup = async (email, password, username, role = 'user') => {
+    setLoading(true);
+    const { user, error } = await supabase.auth.signUp({ email, password });
+    if (user) {
+      const { error: userError } = await supabase
+        .from('users')
+        .upsert({ id: user.id, email, username, role });
+      if (userError) {
+        console.error(userError.message);
       }
-      setUser(mockUser)
-      localStorage.setItem('user', JSON.stringify(mockUser))
-    } catch (error) {
-      console.error('Signup error:', error)
-      throw error
     }
-  }
+    setLoading(false);
+    return { user, error };
+  };
 
   const logout = async () => {
-    setUser(null)
-    localStorage.removeItem('user')
-  }
+    await supabase.auth.signOut();
+  };
 
-  return (
-    <AuthContext.Provider value={{ user, loading, login, signup, logout }}>
-      {children}
-    </AuthContext.Provider>
-  )
-}
+  const refreshUser = async () => {
+    const session = supabase.auth.session();
+    setUser(session?.user);
+    // Fetching role could be included again here if desired
+  };
 
-export function useAuth() {
-  const context = useContext(AuthContext)
-  if (context === undefined) {
-    throw new Error('useAuth must be used within AuthProvider')
-  }
-  return context
-}
+  const value = { user, role, login, signup, logout, refreshUser, loading };
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+};
+
+export const useAuth = () => useContext(AuthContext);
