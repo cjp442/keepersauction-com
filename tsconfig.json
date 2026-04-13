@@ -12,28 +12,15 @@
     "jsx": "react-jsx",
     "strict": true,
     "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "noFallthroughCasesInSwitch": true,
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
-    }
-  },
-  "include": ["src"],
-  "references": [{ "path": "./tsconfig.node.json" }]
-    "allowJs": false,
-    "skipLibCheck": true,
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "strict": true,
-    "forceConsistentCasingInFileNames": true,
-    "module": "ESNext",
-    "moduleResolution": "Node",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "noEmit": true,
-    "jsx": "react-jsx",
+    },
     "types": ["vite/client", "node"]
   },
   "include": ["src"],
@@ -51,5 +38,5 @@
     "src/components/RoomCustomizer.tsx",
     "src/components/ThreeDScene.tsx"
   ],
-  "references": []
+  "references": [{ "path": "./tsconfig.node.json" }]
 }
