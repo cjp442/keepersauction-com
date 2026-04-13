@@ -1,0 +1,1 @@
+export const Home = () => <div style={{color:'gold',background:'#0f172a',padding:'40px'}}><h1>Keepers Project</h1><h2>Basic Membership: $14.99/mo</h2></div>;
