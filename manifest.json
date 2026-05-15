@@ -1,0 +1,39 @@
+{
+  "name": "The Coin Keeper",
+  "short_name": "CoinKeeper",
+  "description": "Live token auctions for rare coins and precious bullion",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0D0A08",
+  "theme_color": "#D4953A",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "/images/coin-gold.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/images/coin-gold.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["games", "shopping", "entertainment"],
+  "screenshots": [
+    {
+      "src": "/images/saloon-hero.jpg",
+      "sizes": "1024x768",
+      "type": "image/jpeg",
+      "form_factor": "wide"
+    },
+    {
+      "src": "/images/coin-gold.jpg",
+      "sizes": "1024x1024",
+      "type": "image/jpeg",
+      "form_factor": "narrow"
+    }
+  ]
+}
