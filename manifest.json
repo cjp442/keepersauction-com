@@ -1,7 +1,7 @@
 {
-  "name": "The Coin Keeper",
-  "short_name": "CoinKeeper",
-  "description": "Live token auctions for rare coins and precious bullion",
+  "name": "Keepers Auction",
+  "short_name": "Keepers",
+  "description": "Live auctions for rare coins, precious bullion, and collector lots",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0D0A08",
@@ -9,13 +9,13 @@
   "orientation": "any",
   "icons": [
     {
-      "src": "/images/coin-gold.jpg",
+      "src": "/images/coin-eagle.jpg",
       "sizes": "192x192",
       "type": "image/jpeg",
       "purpose": "any maskable"
     },
     {
-      "src": "/images/coin-gold.jpg",
+      "src": "/images/coin-eagle.jpg",
       "sizes": "512x512",
       "type": "image/jpeg",
       "purpose": "any maskable"
@@ -24,13 +24,13 @@
   "categories": ["games", "shopping", "entertainment"],
   "screenshots": [
     {
-      "src": "/images/saloon-hero.jpg",
+      "src": "/images/saloon-main.jpg",
       "sizes": "1024x768",
       "type": "image/jpeg",
       "form_factor": "wide"
     },
     {
-      "src": "/images/coin-gold.jpg",
+      "src": "/images/coin-eagle.jpg",
       "sizes": "1024x1024",
       "type": "image/jpeg",
       "form_factor": "narrow"

@@ -1,9 +1,11 @@
-const CACHE_NAME = 'coin-keeper-v1'
+const CACHE_NAME = 'keepers-auction-v2'
 const STATIC_ASSETS = [
   '/',
   '/index.html',
-  '/images/coin-gold.jpg',
-  '/images/saloon-hero.jpg',
+  '/manifest.json',
+  '/launch-guard-v2.js',
+  '/images/coin-eagle.jpg',
+  '/images/saloon-main.jpg',
   '/images/saloon-floor-v2.jpg',
   '/images/saloon-wall-v2.jpg',
   '/images/saloon-bar-v2.jpg',
@@ -13,7 +15,9 @@ const STATIC_ASSETS = [
 
 self.addEventListener('install', (e) => {
   e.waitUntil(
-    caches.open(CACHE_NAME).then(cache => cache.addAll(STATIC_ASSETS))
+    caches.open(CACHE_NAME).then(cache =>
+      Promise.allSettled(STATIC_ASSETS.map(asset => cache.add(asset)))
+    )
   )
   self.skipWaiting()
 })
@@ -28,9 +32,16 @@ self.addEventListener('activate', (e) => {
 })
 
 self.addEventListener('fetch', (e) => {
+  if (e.request.method !== 'GET') return
+
   e.respondWith(
     caches.match(e.request).then(response => {
-      return response || fetch(e.request).catch(() => caches.match('/index.html'))
+      if (response) return response
+
+      return fetch(e.request).catch(() => {
+        if (e.request.mode === 'navigate') return caches.match('/index.html')
+        return caches.match(e.request)
+      })
     })
   )
 })
