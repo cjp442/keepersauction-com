@@ -1,9 +1,11 @@
-const CACHE_NAME = 'keepers-auction-v2'
+const CACHE_NAME = 'keepers-auction-v3'
 const STATIC_ASSETS = [
   '/',
   '/index.html',
   '/manifest.json',
   '/launch-guard-v2.js',
+  '/public-ready-v1.css',
+  '/public-ready-v1.js',
   '/images/coin-eagle.jpg',
   '/images/saloon-main.jpg',
   '/images/saloon-floor-v2.jpg',

@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex,nofollow">
+    <title>Keepers Auction Local Admin</title>
+    <link rel="stylesheet" href="/public-ready-v1.css">
+  </head>
+  <body class="ka-shell">
+    <main class="ka-wrap">
+      <div class="ka-topline">
+        <div>
+          <h1 class="ka-title">Local Admin Console</h1>
+          <p class="ka-sub">This page is separate from the public app. It reads local support knocks and local host application drafts until a real admin backend is connected.</p>
+        </div>
+        <button class="ka-btn primary" id="refresh">Refresh</button>
+      </div>
+      <section class="ka-grid">
+        <div class="ka-card">
+          <h3>Admin Support Knocks</h3>
+          <div id="knocks" class="ka-empty">No knocks yet.</div>
+        </div>
+        <div class="ka-card">
+          <h3>Host Application Draft</h3>
+          <div id="apps" class="ka-empty">No application draft yet.</div>
+        </div>
+        <div class="ka-card">
+          <h3>Important Backend Hooks</h3>
+          <ul>
+            <li>Authentication and admin role checks</li>
+            <li>Live stream ingest, OBS keys, phone pairing</li>
+            <li>Payments, tax, wallet ledger, payouts</li>
+            <li>Auction lots, bids, orders, shipping, disputes</li>
+          </ul>
+        </div>
+      </section>
+    </main>
+    <script>
+      function read() {
+        const knock = localStorage.getItem('keepers_admin_knock')
+        const app = localStorage.getItem('keepers_host_application_draft')
+        document.getElementById('knocks').textContent = knock ? JSON.stringify(JSON.parse(knock), null, 2) : 'No knocks yet.'
+        document.getElementById('apps').textContent = app ? JSON.stringify(JSON.parse(app), null, 2) : 'No application draft yet.'
+      }
+      document.getElementById('refresh').onclick = read
+      read()
+    </script>
+  </body>
+</html>

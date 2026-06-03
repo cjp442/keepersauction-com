@@ -1,5 +1,5 @@
 const MONEY_PATHS = ['/wallet', '/saloon']
-const ADMIN_PATHS = ['/admin', '/admin-room', '/host-dashboard']
+const ADMIN_PATHS = ['/admin', '/admin-room']
 
 function currentRoute() {
   if (location.hash.startsWith('#/')) return location.hash.slice(1).split('?')[0]
