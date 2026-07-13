@@ -71,7 +71,7 @@ function hosts() {
           <div class="ka-empty">No real ${name.toLowerCase()} yet.</div>
         </div>`).join('')}
     </div>
-  `, `<button class="ka-btn primary" data-go="/host-apply">Apply To Host</button><button class="ka-btn" data-go="/saloon">Enter 3D Saloon</button>`))
+  `, `<button class="ka-btn primary" data-go="/host-apply">Apply To Host</button><button class="ka-btn" data-go="/room/host-small">Small Room</button><button class="ka-btn" data-go="/room/host-medium">Medium Room</button><button class="ka-btn" data-go="/room/host-large">Large Room</button><button class="ka-btn" data-go="/user-room">My Room</button>`))
 }
 
 function hostControls() {
@@ -153,34 +153,62 @@ function avatarStudio() {
   sync()
 }
 
-function room3d() {
-  setApp(`<div class="ka-room">
+function room3d(roomType = 'medium') {
+  setApp(`<div class="ka-room ${roomType}">
     <div class="ka-roombar">
       <button class="ka-btn" data-go="/hosts">Exit Room</button>
-      <strong>3D Host Room</strong>
+      <strong>3D Host Room (${roomType.charAt(0).toUpperCase() + roomType.slice(1)})</strong>
       <span class="ka-pill">Camera just above head | body visible</span>
     </div>
     <div class="ka-room-stage">
       <div class="ka-room-world" id="ka-world">
         <div class="ka-floor"></div><div class="ka-wall back"></div><div class="ka-wall left"></div><div class="ka-wall right"></div>
+        <div class="ka-door back-wall" id="ka-door-back"></div>
         <div class="ka-screen">Host stream will appear here</div>
         <div class="ka-seat s1"></div><div class="ka-seat s2"></div><div class="ka-seat s3"></div><div class="ka-seat s4"></div><div class="ka-seat s5"></div>
         <div class="ka-body"></div>
       </div>
     </div>
     <div class="ka-sidepanel">
-      <div class="ka-card"><h3>Walk Controls</h3><p>Use W/A/S/D to move. Use Q/E to turn. This is the free-walk room shell for live host-room data.</p></div>
-      <div class="ka-card"><h3>Future Room Data</h3><div class="ka-empty">No stream, lots, bids, chat, or viewers yet.</div></div>
+      <div class="ka-card"><h3>Walk Controls</h3><p>Use W/A/S/D to move. Use Q/E to turn. Click door or seats to interact.</p></div>
+      <div class="ka-card"><h3>Room Info</h3><p><strong>Size:</strong> ${roomType.charAt(0).toUpperCase() + roomType.slice(1)}<br><strong>Status:</strong> Live Auction Active</p></div>
+      <div class="ka-card"><h3>Interaction Tips</h3><ul style="margin:0;padding-left:16px;font-size:12px;color:#a89880;"><li>Click door to enter/exit</li><li>Click seats to sit</li><li>WASD to walk around</li><li>Q/E to turn view</li></ul></div>
       <div class="ka-card"><h3>Support</h3><button class="ka-btn primary" id="ka-knock">Knock For Admin</button></div>
     </div>
   </div>`)
+  
   let x = 0, y = 0, turn = 0
+  let doorOpen = false
   const world = document.getElementById('ka-world')
+  const door = document.getElementById('ka-door-back')
+  
   const draw = () => {
     world.style.setProperty('--x', `${x}px`)
     world.style.setProperty('--y', `${y}px`)
     world.style.setProperty('--turn', `${turn}deg`)
   }
+  
+  // Door interaction
+  if (door) {
+    door.onclick = (e) => {
+      e.stopPropagation()
+      doorOpen = !doorOpen
+      door.classList.toggle('open', doorOpen)
+      const msg = doorOpen ? 'Door opened! Welcome to the auction room.' : 'Door closed.'
+      localStorage.setItem('keepers_door_interaction', JSON.stringify({ action: 'toggle_door', doorOpen, at: new Date().toISOString() }))
+    }
+  }
+  
+  // Seat interaction
+  document.querySelectorAll('.ka-seat').forEach((seat, idx) => {
+    seat.onclick = (e) => {
+      e.stopPropagation()
+      localStorage.setItem('keepers_seat_interaction', JSON.stringify({ seat: idx + 1, at: new Date().toISOString() }))
+      alert(`Sitting at seat ${idx + 1}`)
+    }
+  })
+  
+  // Walking controls
   window.onkeydown = event => {
     const step = 18
     if (event.key.toLowerCase() === 'w') y += step
@@ -191,10 +219,66 @@ function room3d() {
     if (event.key.toLowerCase() === 'e') turn += 8
     draw()
   }
+  
   document.getElementById('ka-knock').onclick = () => {
     localStorage.setItem('keepers_admin_knock', JSON.stringify({ route: route(), at: new Date().toISOString() }))
     alert('Admin support knock saved locally. Production notification hook should send this to you.')
   }
+  
+  draw()
+}
+
+function userRoom() {
+  setApp(`<div class="ka-user-room">
+    <div class="ka-user-room-topbar">
+      <button class="ka-btn" data-go="/">Exit Room</button>
+      <div class="ka-user-info">
+        <span id="user-name">Personal Room</span>
+        <span>|</span>
+        <span id="user-status">Active</span>
+      </div>
+      <button class="ka-btn" data-go="/avatar">Customize Avatar</button>
+    </div>
+    <div class="ka-user-room-stage">
+      <div class="ka-user-world" id="ka-user-world">
+        <div class="ka-floor"></div><div class="ka-wall back"></div><div class="ka-wall left"></div><div class="ka-wall right"></div>
+        <div class="ka-door left-wall" id="ka-exit-door"></div>
+        <div class="ka-screen">Your personal space</div>
+        <div class="ka-body"></div>
+      </div>
+    </div>
+  </div>`)
+  
+  let x = 0, y = 0, turn = 0
+  const world = document.getElementById('ka-user-world')
+  const exitDoor = document.getElementById('ka-exit-door')
+  
+  const draw = () => {
+    world.style.setProperty('--x', `${x}px`)
+    world.style.setProperty('--y', `${y}px`)
+    world.style.setProperty('--turn', `${turn}deg`)
+  }
+  
+  // Exit door
+  if (exitDoor) {
+    exitDoor.onclick = () => {
+      go('/')
+    }
+  }
+  
+  // Walking controls
+  window.onkeydown = event => {
+    const step = 18
+    if (event.key.toLowerCase() === 'w') y += step
+    if (event.key.toLowerCase() === 's') y -= step
+    if (event.key.toLowerCase() === 'a') x += step
+    if (event.key.toLowerCase() === 'd') x -= step
+    if (event.key.toLowerCase() === 'q') turn -= 8
+    if (event.key.toLowerCase() === 'e') turn += 8
+    draw()
+  }
+  
+  draw()
 }
 
 function adminKnock() {
@@ -208,6 +292,11 @@ function render() {
   if (r === '/hosts') return hosts()
   if (r === '/host-dashboard' || r === '/host-controls') return hostControls()
   if (r === '/avatar') return avatarStudio()
+  if (r === '/user-room') return userRoom()
+  if (r.startsWith('/room/host-')) {
+    const roomType = r.replace('/room/host-', '')
+    return room3d(roomType)
+  }
   if (r.startsWith('/room/')) return room3d()
   clearApp()
 }
